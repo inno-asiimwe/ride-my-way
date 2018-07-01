@@ -1,0 +1,32 @@
+version: '3.4'
+
+services:
+  
+  users:
+    container_name: users
+    build:
+      context: ./services/users/app
+      dockerfile: dev.Dockerfile
+    volumes:
+      - './services/users/app:/usr/src/app'
+    ports:
+      - 5001:5000
+    environment:
+      - FLASK_APP=run.py
+      - FLASK_DEBUG=1
+      - APP_SETTINGS=app.config.DevelopmentConfig
+    depends_on:
+      - users_db
+    links:
+      - users_db
+
+  users_db:
+    container_name: users_db
+    build:
+      context: ./services/users/app/database
+      dockerfile: Dockerfile
+    ports:
+      - 5435:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
